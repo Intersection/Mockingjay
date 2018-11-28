@@ -36,6 +36,17 @@ public func json(_ body: Any, status:Int = 200, headers:[String:String]? = nil) 
   }
 }
 
+public func json<Body: Encodable>(_ body: Body, status: Int = 200, headers: [String: String]? = nil) -> (_ request: URLRequest) -> Response {
+  return { (request: URLRequest) in
+    do {
+      let data = try JSONEncoder().encode(body)
+      return jsonData(data, status: status, headers: headers)(request)
+    } catch {
+      return .failure(error as NSError)
+    }
+  }
+}
+
 public func jsonData(_ data: Data, status: Int = 200, headers: [String:String]? = nil) -> (_ request: URLRequest) -> Response {
   return { (request:URLRequest) in
     var headers = headers ?? [String:String]()
